@@ -1,12 +1,11 @@
 from logging import CRITICAL, DEBUG, basicConfig, getLogger
 
 import google.cloud.logging
+from cumplo_common.dependencies.authentication import authenticate
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from middlewares.authentication import authenticate
-from middlewares.authorization import is_admin
-from routers import configurations, funding_requests
+from routers import configurations
 from utils.constants import IS_TESTING, LOG_FORMAT
 
 if not IS_TESTING:
@@ -33,9 +32,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-app.include_router(funding_requests.router, dependencies=[Depends(authenticate)])
-app.include_router(funding_requests.internal, dependencies=[Depends(authenticate), Depends(is_admin)])
 
 app.include_router(configurations.router, dependencies=[Depends(authenticate)])

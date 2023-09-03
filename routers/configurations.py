@@ -2,13 +2,13 @@ from http import HTTPStatus
 from logging import getLogger
 from typing import Annotated, cast
 
+from cumplo_common.database.firestore import firestore_client
+from cumplo_common.models.configuration import Configuration
+from cumplo_common.models.user import User
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 
-from integrations.firestore import firestore_client
-from models.configuration import FilterConfiguration
-from models.user import User
 from schemas.configurations import ConfigurationPayload
 from utils.constants import MAX_CONFIGURATIONS
 
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/filters/configurations")
 
 
 @router.get("", status_code=HTTPStatus.OK)
-async def get_configurations(request: Request) -> list[Annotated[dict, FilterConfiguration]]:
+async def get_configurations(request: Request) -> list[Annotated[dict, Configuration]]:
     """
     Gets a list of existing configurations.
     """
@@ -27,7 +27,7 @@ async def get_configurations(request: Request) -> list[Annotated[dict, FilterCon
 
 
 @router.get("/{id_configuration}", status_code=HTTPStatus.OK)
-async def get_single_configurations(request: Request, id_configuration: int) -> Annotated[dict, FilterConfiguration]:
+async def get_single_configurations(request: Request, id_configuration: int) -> Annotated[dict, Configuration]:
     """
     Gets a single configuration.
     """
@@ -39,7 +39,7 @@ async def get_single_configurations(request: Request, id_configuration: int) -> 
 
 
 @router.post("", status_code=HTTPStatus.CREATED)
-async def post_configuration(request: Request, payload: ConfigurationPayload) -> Annotated[dict, FilterConfiguration]:
+async def post_configuration(request: Request, payload: ConfigurationPayload) -> Annotated[dict, Configuration]:
     """
     Creates a configuration.
     """
@@ -48,12 +48,12 @@ async def post_configuration(request: Request, payload: ConfigurationPayload) ->
         raise HTTPException(status_code=HTTPStatus.TOO_MANY_REQUESTS, detail="Max configurations reached")
 
     id_configuration = max(user.configurations.keys(), default=0) + 1
-    configuration = FilterConfiguration(id=id_configuration, **payload.dict(exclude_none=True))
+    configuration = Configuration(id=id_configuration, **payload.dict(exclude_none=True))
 
     if configuration in user.configurations.values():
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Configuration already exists")
 
-    firestore_client.update_configuration(user.id, configuration)
+    firestore_client.put_configuration(user.id, configuration)
     return configuration.serialize()
 
 
@@ -64,11 +64,11 @@ async def put_configuration(request: Request, payload: ConfigurationPayload, id_
     """
     user = cast(User, request.state.user)
     if configuration := user.configurations.get(id_configuration):
-        new_configuration = FilterConfiguration(id=configuration.id, **payload.dict(exclude_none=True))
+        new_configuration = Configuration(id=configuration.id, **payload.dict(exclude_none=True))
         if new_configuration in user.configurations.values():
             raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Configuration already exists")
 
-        return firestore_client.update_configuration(user.id, configuration)
+        return firestore_client.put_configuration(user.id, configuration)
 
     raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
 
