@@ -19,11 +19,9 @@ router = APIRouter(prefix="/filters/configurations")
 
 @router.get("", status_code=HTTPStatus.OK)
 async def get_configurations(request: Request) -> list[Annotated[dict, Configuration]]:
-    """
-    Gets a list of existing configurations.
-    """
+    """Gets a list of existing configurations."""
     user = cast(User, request.state.user)
-    return [configuration.serialize() for configuration in user.configurations.values()]
+    return [configuration.model_dump(exclude_none=True) for configuration in user.configurations.values()]
 
 
 @router.get("/{id_configuration}", status_code=HTTPStatus.OK)
@@ -32,10 +30,10 @@ async def get_single_configurations(request: Request, id_configuration: int) -> 
     Gets a single configuration.
     """
     user = cast(User, request.state.user)
-    if configuration := user.configurations.get(id_configuration):
-        return configuration.serialize()
+    if not (configuration := user.configurations.get(id_configuration)):
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
 
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
+    return configuration.model_dump(exclude_none=True)
 
 
 @router.post("", status_code=HTTPStatus.CREATED)
@@ -45,10 +43,10 @@ async def post_configuration(request: Request, payload: ConfigurationPayload) ->
     """
     user = cast(User, request.state.user)
     if len(user.configurations) >= MAX_CONFIGURATIONS:
-        raise HTTPException(status_code=HTTPStatus.TOO_MANY_REQUESTS, detail="Max configurations reached")
+        raise HTTPException(status_code=HTTPStatus.TOO_MANY_REQUESTS, detail="Max amount of configurations reached")
 
     id_configuration = max(user.configurations.keys(), default=0) + 1
-    configuration = Configuration(id=id_configuration, **payload.dict(exclude_none=True))
+    configuration = Configuration(id=id_configuration, **payload.model_dump(exclude_none=True))
 
     if configuration in user.configurations.values():
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Configuration already exists")
@@ -63,14 +61,14 @@ async def put_configuration(request: Request, payload: ConfigurationPayload, id_
     Updates a configuration.
     """
     user = cast(User, request.state.user)
-    if configuration := user.configurations.get(id_configuration):
-        new_configuration = Configuration(id=configuration.id, **payload.dict(exclude_none=True))
-        if new_configuration in user.configurations.values():
-            raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Configuration already exists")
+    if not (configuration := user.configurations.get(id_configuration)):
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
 
-        return firestore_client.put_configuration(user.id, configuration)
+    new_configuration = configuration.model_copy(update=payload.model_dump(exclude_none=True))
+    if new_configuration in user.configurations.values():
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Configuration already exists")
 
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
+    return firestore_client.put_configuration(user.id, configuration)
 
 
 @router.delete("/{id_configuration}", status_code=HTTPStatus.NO_CONTENT)
@@ -79,7 +77,7 @@ async def delete_configuration(request: Request, id_configuration: int) -> None:
     Deletes a configuration.
     """
     user = cast(User, request.state.user)
-    if configuration := user.configurations.get(id_configuration):
-        return firestore_client.delete_configuration(user.id, configuration.id)
+    if not (configuration := user.configurations.get(id_configuration)):
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
 
-    raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
+    return firestore_client.delete_configuration(user.id, configuration.id)
