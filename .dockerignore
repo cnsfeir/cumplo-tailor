@@ -1,0 +1,16 @@
+# Exclude: everything
+*
+
+# Include: application files
+!cumplo_tailor
+
+# Include: build files
+!pyproject.toml
+!poetry.toml
+!poetry.lock
+
+# Include: miscelaneous files
+!entrypoint.sh
+
+# Include: credentials
+!cumplo-tailor-credentials.json
