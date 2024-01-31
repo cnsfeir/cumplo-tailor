@@ -2,14 +2,13 @@ from http import HTTPStatus
 from logging import getLogger
 from typing import Annotated, cast
 
+from business.channels import ChannelConfigurationFactory
 from cumplo_common.database.firestore import firestore_client
 from cumplo_common.models.channel import ChannelConfiguration, ChannelType
 from cumplo_common.models.user import User
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
-
-from business.channels import ChannelConfigurationFactory
 
 logger = getLogger(__name__)
 

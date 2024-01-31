@@ -8,7 +8,6 @@ from cumplo_common.models.user import User
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
-
 from schemas.configurations import ConfigurationPayload
 from utils.constants import MAX_CONFIGURATIONS
 
