@@ -1,3 +1,6 @@
+include .env
+export
+
 PYTHON_VERSION := $(shell python -c "print(open('.python-version').read().strip())")
 INSTALLED_VERSION := $(shell python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 
@@ -6,7 +9,9 @@ INSTALLED_VERSION := $(shell python -c "import sys; print(f'{sys.version_info.ma
   linters \
   setup_venv \
   start \
-  build
+  build \
+  down \
+  login
 
 # Checks if the installed Python version matches the required version
 check_python_version:
@@ -17,9 +22,14 @@ check_python_version:
 
 # Creates a virtual environment and installs dependencies
 setup_venv:
-	make check_python_version
-	rm -rf .venv
-	poetry install
+	@make check_python_version
+	@rm -rf .venv
+	@poetry install
+
+# Activates the project configuration and logs in to gcloud
+login:
+	@gcloud config configurations activate $(PROJECT_ID)
+	@gcloud auth application-default login
 
 # Runs linters
 linters:
@@ -28,15 +38,16 @@ linters:
 		make setup_venv; \
 	fi
 
-	.venv/bin/python -m black --check --line-length=120 .
-	.venv/bin/python -m flake8 --config .flake8
-	.venv/bin/python -m pylint --rcfile=.pylintrc --recursive=y --ignore=.venv --disable=fixme .
-	.venv/bin/python -m mypy --config-file mypy.ini .
+	@poetry run python -m black --check --line-length=120 .
+	@poetry run python -m flake8 --config .flake8
+	@poetry run python -m pylint --rcfile=.pylintrc --recursive=y --ignore=.venv --disable=fixme .
+	@poetry run python -m mypy --config-file mypy.ini .
 
-# Builds the docker image
 build:
-	docker build -f Dockerfile.development -t cumplo-tailor .
+	@docker-compose build cumplo-tailor --build-arg CUMPLO_PYPI_BASE64_KEY=`base64 -i cumplo-pypi-credentials.json`
 
-# Starts the API server
 start:
-	docker run -d -p 8080:8080 -v ./:/app cumplo-tailor
+	@docker-compose up -d cumplo-tailor
+
+down:
+	@docker-compose down
