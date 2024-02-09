@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  cumplo-tailor:
+    image: cumplo-tailor
+    env_file: .env
+    ports:
+      - 8003:8080
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+      args: 
+        - CUMPLO_PYPI_BASE64_KEY
+    volumes:
+      - ./cumplo_tailor:/app/cumplo_tailor
+      - /app/.venv
