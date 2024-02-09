@@ -2,7 +2,6 @@ from logging import CRITICAL, DEBUG, basicConfig, getLogger
 
 import google.cloud.logging
 from cumplo_common.dependencies.authentication import authenticate
-from cumplo_common.middlewares import PubSubMiddleware
 from fastapi import Depends, FastAPI
 
 from cumplo_tailor.routers import channels, filters
@@ -21,7 +20,6 @@ if not IS_TESTING:
 
 
 app = FastAPI(dependencies=[Depends(authenticate)])
-app.add_middleware(PubSubMiddleware)
 
 app.include_router(filters.router)
 app.include_router(channels.router)
