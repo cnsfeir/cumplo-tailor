@@ -5,7 +5,7 @@ from cumplo_common.dependencies.authentication import authenticate
 from cumplo_common.middlewares import PubSubMiddleware
 from fastapi import Depends, FastAPI
 
-from cumplo_tailor.routers import configurations
+from cumplo_tailor.routers import channels, filters
 from cumplo_tailor.utils.constants import IS_TESTING, LOG_FORMAT
 
 basicConfig(level=DEBUG, format=LOG_FORMAT)
@@ -20,7 +20,8 @@ if not IS_TESTING:
     client.setup_logging(log_level=DEBUG)
 
 
-app = FastAPI()
+app = FastAPI(dependencies=[Depends(authenticate)])
 app.add_middleware(PubSubMiddleware)
 
-app.include_router(configurations.router, dependencies=[Depends(authenticate)])
+app.include_router(filters.router)
+app.include_router(channels.router)
