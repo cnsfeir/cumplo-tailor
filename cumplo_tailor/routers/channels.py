@@ -57,7 +57,7 @@ def _post_channel(request: Request, channel_type: ChannelType, payload: dict) ->
 # For now, the payload is simply the ChannelConfiguration class.
 
 
-@router.patch("/{channel_type}", status_code=HTTPStatus.CREATED)
+@router.patch("/{channel_type}", status_code=HTTPStatus.OK)
 def _patch_channel(request: Request, channel_type: ChannelType, payload: dict) -> dict:
     """
     Updates a channel configuration.
