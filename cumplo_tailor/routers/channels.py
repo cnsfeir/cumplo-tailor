@@ -62,7 +62,6 @@ def _patch_channel(request: Request, channel_type: ChannelType, payload: dict) -
     """
     Updates a channel configuration.
     """
-    print("ELPAYLOAD", payload)
     user = cast(User, request.state.user)
     if not (channel := user.channels.get(channel_type)):
         raise HTTPException(HTTPStatus.NOT_FOUND)
