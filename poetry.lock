@@ -409,13 +409,13 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "cumplo-common"
-version = "1.0.3"
+version = "1.0.4"
 description = "A one-stop library that centralizes the core logic and protects the domain of the Cumplo API project"
 optional = false
 python-versions = ">=3.11,<4.0"
 files = [
-    {file = "cumplo_common-1.0.3-py3-none-any.whl", hash = "sha256:3d800cb438088f5f3d0fa4cded400beaaaf231403bb2cff500a0fadfda9a309e"},
-    {file = "cumplo_common-1.0.3.tar.gz", hash = "sha256:93e66bf2966b49e8c210575fda91dadf3d72826eed68b775e22a8536bf159182"},
+    {file = "cumplo_common-1.0.4-py3-none-any.whl", hash = "sha256:9b6861b55a3a91e3ec992522636ecfa5cd8a1c6b74b0f74ea8acde971c9bb6b4"},
+    {file = "cumplo_common-1.0.4.tar.gz", hash = "sha256:2854b4c4e90dd73f3c8e06e5000a29d02f15c8ab463d74977b76ee8f0ce2904a"},
 ]
 
 [package.dependencies]
@@ -1300,13 +1300,13 @@ files = [
 
 [[package]]
 name = "pydantic"
-version = "2.6.2"
+version = "2.6.3"
 description = "Data validation using Python type hints"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pydantic-2.6.2-py3-none-any.whl", hash = "sha256:37a5432e54b12fecaa1049c5195f3d860a10e01bdfd24f1840ef14bd0d3aeab3"},
-    {file = "pydantic-2.6.2.tar.gz", hash = "sha256:a09be1c3d28f3abe37f8a78af58284b236a92ce520105ddc91a6d29ea1176ba7"},
+    {file = "pydantic-2.6.3-py3-none-any.whl", hash = "sha256:72c6034df47f46ccdf81869fddb81aade68056003900a8724a4f160700016a2a"},
+    {file = "pydantic-2.6.3.tar.gz", hash = "sha256:e07805c4c7f5c6826e33a1d4c9d47950d7eaf34868e2690f8594d2e30241f11f"},
 ]
 
 [package.dependencies]
@@ -1581,13 +1581,13 @@ full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7
 
 [[package]]
 name = "tomlkit"
-version = "0.12.3"
+version = "0.12.4"
 description = "Style preserving TOML library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tomlkit-0.12.3-py3-none-any.whl", hash = "sha256:b0a645a9156dc7cb5d3a1f0d4bab66db287fcb8e0430bdd4664a095ea16414ba"},
-    {file = "tomlkit-0.12.3.tar.gz", hash = "sha256:75baf5012d06501f07bee5bf8e801b9f343e7aac5a92581f20f80ce632e6b5a4"},
+    {file = "tomlkit-0.12.4-py3-none-any.whl", hash = "sha256:5cd82d48a3dd89dee1f9d64420aa20ae65cfbd00668d6f094d7578a78efbb77b"},
+    {file = "tomlkit-0.12.4.tar.gz", hash = "sha256:7ca1cfc12232806517a8515047ba66a19369e71edf2439d0f5824f91032b6cc3"},
 ]
 
 [[package]]
@@ -1762,4 +1762,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8b5270c6538036bbd83109e205b855c18d0e0ada1cc2254defe886f4a9911a07"
+content-hash = "6187e9d935ba7b1e4b9e72f75db056f132eca5baa212a9bb7f15ba809e5a43fb"
