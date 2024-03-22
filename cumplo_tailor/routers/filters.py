@@ -67,8 +67,11 @@ def _patch_filter(request: Request, payload: dict, id_filter: str) -> dict:
     except ValidationError as error:
         raise HTTPException(HTTPStatus.UNPROCESSABLE_ENTITY, detail=error.errors()) from error
 
-    if new_filter in user.filters.values():
+    if new_filter == filter_:
         raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
+
+    if new_filter in user.filters.values():
+        raise HTTPException(HTTPStatus.CONFLICT, detail="Filter already exists")
 
     firestore.client.filters.put(str(user.id), new_filter)
     return new_filter.json()
