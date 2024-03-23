@@ -29,12 +29,14 @@ def validate(user: User, channel: ChannelConfiguration) -> None:
                 raise HTTPException(HTTPStatus.CONFLICT, detail="Only one WhatsApp channel is allowed")
 
         case ChannelType.IFTTT:
+            channel = cast(IFTTTConfiguration, channel)
             ifttt_channels = (channel for channel in user.channels.values() if channel.type_ == ChannelType.IFTTT)
             if existing_channel := next(ifttt_channels, None):
-                if cast(IFTTTConfiguration, existing_channel).key != cast(IFTTTConfiguration, channel).key:
+                if cast(IFTTTConfiguration, existing_channel).metadata.key != channel.metadata.key:
                     raise HTTPException(HTTPStatus.CONFLICT, detail="Only one IFTTT key is allowed per user")
 
         case ChannelType.WEBHOOK:
-            for channel in filter(lambda channel: channel.type_ == ChannelType.WEBHOOK, user.channels.values()):
-                if cast(WebhookConfiguration, channel).url == cast(WebhookConfiguration, channel).url:
+            channel = cast(WebhookConfiguration, channel)
+            for webhook_channel in filter(lambda channel: channel.type_ == ChannelType.WEBHOOK, user.channels.values()):
+                if cast(WebhookConfiguration, webhook_channel).metadata.url == channel.metadata.url:
                     raise HTTPException(HTTPStatus.CONFLICT, detail="This webhook URL already exists")
