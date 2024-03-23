@@ -71,7 +71,7 @@ def _patch_filter(request: Request, payload: dict, id_filter: str) -> dict:
         raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
 
     if new_filter in user.filters.values():
-        raise HTTPException(HTTPStatus.CONFLICT, detail="Filter already exists")
+        raise HTTPException(HTTPStatus.CONFLICT, detail="The updated Filter already exists")
 
     firestore.client.filters.put(str(user.id), new_filter)
     return new_filter.json()
