@@ -64,10 +64,8 @@ def _patch_filter(request: Request, payload: dict, id_filter: str) -> dict:
     if not (filter_ := user.filters.get(id_filter)):
         raise HTTPException(HTTPStatus.NOT_FOUND)
 
-    try:
-        new_filter = FilterConfiguration.model_validate({**filter_.model_dump(), **payload})
-    except ValidationError as error:
-        raise HTTPException(HTTPStatus.UNPROCESSABLE_ENTITY, detail=error.errors()) from error
+    data = update_dictionary(filter_.model_dump(), payload)
+    new_filter = FilterConfiguration.model_validate(data)
 
     if new_filter == filter_:
         raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
