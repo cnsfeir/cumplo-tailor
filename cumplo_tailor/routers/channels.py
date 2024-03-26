@@ -47,6 +47,9 @@ def _post_channel(request: Request, channel_type: ChannelType, payload: dict) ->
     channel = CHANNEL_CONFIGURATION_BY_TYPE[channel_type].model_validate({"id": ulid.new(), **payload})
     business.channels.validate(user, channel)
 
+    if channel in user.channels.values():
+        raise HTTPException(HTTPStatus.CONFLICT, detail="The Channel already exists")
+
     firestore.client.channels.put(str(user.id), channel)
     return channel.json()
 
@@ -73,6 +76,8 @@ def _patch_channel(request: Request, id_channel: str, payload: dict) -> dict:
 
     if new_channel in user.channels.values():
         raise HTTPException(HTTPStatus.CONFLICT, detail="The updated Channel already exists")
+
+    business.channels.validate(user, new_channel)
 
     firestore.client.channels.put(str(user.id), new_channel)
     return new_channel.json()
