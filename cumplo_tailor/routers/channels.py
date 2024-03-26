@@ -1,14 +1,17 @@
 from http import HTTPStatus
 from logging import getLogger
 from typing import cast
+
+import ulid
 from cumplo_common.database import firestore
 from cumplo_common.models.channel import CHANNEL_CONFIGURATION_BY_TYPE, ChannelType
 from cumplo_common.models.user import User
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
-from pydantic import ValidationError
+
 from cumplo_tailor import business
+from cumplo_tailor.utils.dictionary import update_dictionary
 
 logger = getLogger(__name__)
 
@@ -41,11 +44,7 @@ def _post_channel(request: Request, channel_type: ChannelType, payload: dict) ->
     """
     user = cast(User, request.state.user)
 
-    try:
-        channel = CHANNEL_CONFIGURATION_BY_TYPE[channel_type].model_validate(payload)
-    except ValidationError as error:
-        raise HTTPException(HTTPStatus.UNPROCESSABLE_ENTITY, detail=error.errors()) from error
-
+    channel = CHANNEL_CONFIGURATION_BY_TYPE[channel_type].model_validate({"id": ulid.new(), **payload})
     business.channels.validate(user, channel)
 
     firestore.client.channels.put(str(user.id), channel)
@@ -66,10 +65,8 @@ def _patch_channel(request: Request, id_channel: str, payload: dict) -> dict:
     if not (channel := user.channels.get(id_channel)):
         raise HTTPException(HTTPStatus.NOT_FOUND)
 
-    try:
-        new_channel = CHANNEL_CONFIGURATION_BY_TYPE[channel.type_].model_validate({**channel.model_dump(), **payload})
-    except ValidationError as error:
-        raise HTTPException(HTTPStatus.UNPROCESSABLE_ENTITY, detail=error.errors()) from error
+    data = update_dictionary(channel.model_dump(), payload)
+    new_channel = CHANNEL_CONFIGURATION_BY_TYPE[channel.type_].model_validate(data)
 
     if new_channel == channel:
         raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
