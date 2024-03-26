@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cumplo-tailor"
-version = "0.1.2"
+version = "0.2.0"
 description = "A configuration service that empowers users to customize their investment preferences and notification settings"
 authors = ["Cristobal Sfeir <cnsfeir@uc.cl>"]
 packages = [{ include = "cumplo_tailor" }]
@@ -14,7 +14,7 @@ python-dotenv = "^1.0.0"
 google-cloud-logging = "^3.5.0"
 fastapi = "^0.109.1"
 uvicorn = "^0.23.1"
-cumplo-common = { version = "^1.0.4", source = "cumplo-pypi" }
+cumplo-common = { version = "^1.2.0", source = "cumplo-pypi" }
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.17.2"

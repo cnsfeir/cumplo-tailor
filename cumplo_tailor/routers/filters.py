@@ -2,16 +2,16 @@ from http import HTTPStatus
 from logging import getLogger
 from typing import cast
 
+import ulid
 from cumplo_common.database import firestore
 from cumplo_common.models.filter_configuration import FilterConfiguration
 from cumplo_common.models.user import User
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
-from pydantic import ValidationError
 
-from cumplo_tailor.schemas.filters import FilterConfigurationPayload
 from cumplo_tailor.utils.constants import MAX_CONFIGURATIONS
+from cumplo_tailor.utils.dictionary import update_dictionary
 
 logger = getLogger(__name__)
 
@@ -38,7 +38,7 @@ def _get_single_filter(request: Request, id_filter: str) -> dict:
 
 
 @router.post("", status_code=HTTPStatus.CREATED)
-def _post_filter(request: Request, payload: FilterConfigurationPayload) -> dict:
+def _post_filter(request: Request, payload: dict) -> dict:
     """
     Creates a new filter configuration.
     """
@@ -46,7 +46,9 @@ def _post_filter(request: Request, payload: FilterConfigurationPayload) -> dict:
     if len(user.filters) >= MAX_CONFIGURATIONS:
         raise HTTPException(HTTPStatus.TOO_MANY_REQUESTS, detail="Max amount of filters reached")
 
-    if (filter_ := payload.to_filter()) in user.filters.values():
+    filter_ = FilterConfiguration.model_validate({"id": ulid.new(), **payload})
+
+    if filter_ in user.filters.values():
         raise HTTPException(HTTPStatus.CONFLICT, detail="Filter already exists")
 
     firestore.client.filters.put(str(user.id), filter_)
@@ -62,13 +64,14 @@ def _patch_filter(request: Request, payload: dict, id_filter: str) -> dict:
     if not (filter_ := user.filters.get(id_filter)):
         raise HTTPException(HTTPStatus.NOT_FOUND)
 
-    try:
-        new_filter = FilterConfiguration.model_validate({**filter_.model_dump(), **payload})
-    except ValidationError as error:
-        raise HTTPException(HTTPStatus.UNPROCESSABLE_ENTITY, detail=error.errors()) from error
+    data = update_dictionary(filter_.model_dump(), payload)
+    new_filter = FilterConfiguration.model_validate(data)
+
+    if new_filter == filter_:
+        raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
 
     if new_filter in user.filters.values():
-        raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
+        raise HTTPException(HTTPStatus.CONFLICT, detail="The updated Filter already exists")
 
     firestore.client.filters.put(str(user.id), new_filter)
     return new_filter.json()
