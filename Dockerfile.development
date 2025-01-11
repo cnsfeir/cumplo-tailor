@@ -1,5 +1,5 @@
-# Base container with Python 3.11 official image
-FROM python:3.11-bullseye AS base
+# Base container with Python 3.12 official image
+FROM python:3.12-bullseye AS base
 
 # Set up environment variables
 ENV LANG=C.UTF-8 \
