@@ -17,6 +17,8 @@ from cumplo_tailor.utils.constants import IS_TESTING, LOG_FORMAT
 for module in ("google", "urllib3", "werkzeug"):
     getLogger(module).setLevel(CRITICAL)
 
+getLogger("cumplo_common").setLevel(DEBUG)
+
 if IS_TESTING:
     basicConfig(level=DEBUG, format=LOG_FORMAT)
 else:
@@ -27,10 +29,8 @@ app = FastAPI(dependencies=[Depends(authenticate)])
 
 
 @app.exception_handler(ValidationError)
-async def _validation_error_handler(_request: Request, error: ValidationError) -> JSONResponse:
-    """
-    Formats ValidationError as a JSON responses
-    """
+async def _validation_error_handler(_request: Request, error: ValidationError) -> JSONResponse:  # noqa: RUF029
+    """Format ValidationError as a JSON response."""
     content = json.loads(jsonable_encoder(error.json()))
     return JSONResponse(status_code=HTTPStatus.UNPROCESSABLE_ENTITY, content=content)
 
