@@ -44,7 +44,7 @@ def _retrieve_channel(request: Request, id_channel: str) -> dict:
 
 
 @router.post("/{channel_type}", status_code=HTTPStatus.CREATED)
-def _post_channel(request: Request, channel_type: ChannelType, payload: dict) -> dict:
+def _create_channel(request: Request, channel_type: ChannelType, payload: dict) -> dict:
     """
     Create a new channel configuration.
 

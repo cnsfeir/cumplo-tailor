@@ -4,7 +4,7 @@ from typing import cast
 
 import ulid
 from cumplo_common.database import firestore
-from cumplo_common.integrations.cloud_pubsub import CloudPubSub
+from cumplo_common.integrations import CloudPubSub
 from cumplo_common.models import PrivateEvent
 from cumplo_common.models.filter_configuration import FilterConfiguration
 from cumplo_common.models.user import User
@@ -44,7 +44,7 @@ def _retrieve_filter(request: Request, id_filter: str) -> dict:
 
 
 @router.post("", status_code=HTTPStatus.CREATED)
-def _post_filter(request: Request, payload: dict) -> dict:
+def _create_filter(request: Request, payload: dict) -> dict:
     """
     Create a new filter configuration.
 
