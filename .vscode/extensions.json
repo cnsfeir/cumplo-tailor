@@ -1,0 +1,20 @@
+{
+    "recommendations": [
+        // Python
+        "ms-python.python",
+        "matangover.mypy",
+        "charliermarsh.ruff",
+        // Others
+        "tamasfe.even-better-toml", // TOML
+        "ms-vscode.makefile-tools", // Makefile
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "Gruntfuggly.todo-tree",
+        "GitHub.copilot",
+        "ms-azuretools.vscode-docker",
+        "emeraldwalk.runonsave",
+    ],
+    "unwantedRecommendations": [
+        "ms-python.autopep8"
+    ]
+}
