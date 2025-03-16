@@ -121,7 +121,7 @@ def _update_whatsapp_channel(request: Request, payload: dict) -> dict:
     if not channel:
         raise HTTPException(HTTPStatus.NOT_FOUND)
 
-    if phone_number := payload.get("phone_number"):
+    if not (phone_number := payload.get("phone_number")):
         raise HTTPException(HTTPStatus.BAD_REQUEST)
 
     if phone_number == channel.phone_number:
@@ -158,7 +158,7 @@ def _update_webhook_channel(request: Request, id_channel: str, payload: dict) ->
 
     channel = cast(WebhookConfiguration, channel)
 
-    if url := payload.get("url"):
+    if not (url := payload.get("url")):
         raise HTTPException(HTTPStatus.BAD_REQUEST)
 
     if url == channel.url:
@@ -195,7 +195,7 @@ def _update_ifttt_channel(request: Request, id_channel: str, payload: dict) -> d
 
     channel = cast(IFTTTConfiguration, channel)
 
-    if event := payload.get("event"):
+    if not (event := payload.get("event")):
         raise HTTPException(HTTPStatus.BAD_REQUEST)
 
     if event == channel.event:
