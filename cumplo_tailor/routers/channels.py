@@ -18,7 +18,6 @@ from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 
 from cumplo_tailor.controllers import ChannelsController
-from cumplo_tailor.utils.dictionary import update_dictionary
 
 logger = getLogger(__name__)
 
@@ -69,38 +68,6 @@ def _create_channel(request: Request, channel_type: ChannelType, payload: dict) 
     firestore.client.users.put(user)
 
     return channel.json()
-
-
-@router.patch("/{id_channel}", status_code=HTTPStatus.OK)
-def _update_channel(request: Request, id_channel: str, payload: dict) -> dict:
-    """
-    Update a channel configuration.
-
-    Raises:
-        HTTPException: If the channel is not found (404)
-        HTTPException: If there are no changes to update (400)
-        HTTPException: If the updated channel already exists (409)
-
-    """
-    user = cast(User, request.state.user)
-    if not (channel := user.channels.get(id_channel)):
-        raise HTTPException(HTTPStatus.NOT_FOUND)
-
-    data = update_dictionary(channel.model_dump(), payload)
-    new_channel = CHANNEL_CONFIGURATION_BY_TYPE[channel.type_].model_validate(data)
-
-    if new_channel == channel:
-        raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
-
-    if new_channel in user.channels.values():
-        raise HTTPException(HTTPStatus.CONFLICT, detail="The updated Channel already exists")
-
-    ChannelsController.validate(user, new_channel)
-
-    user.channels[str(new_channel.id)] = new_channel
-    firestore.client.users.put(user)
-
-    return new_channel.json()
 
 
 @router.patch("/whatsapp", status_code=HTTPStatus.OK)
