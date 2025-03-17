@@ -228,6 +228,11 @@ def _disable_channel_event(request: Request, id_channel: str, event: PublicEvent
             raise HTTPException(HTTPStatus.CONFLICT, detail="Event is already disabled")
         channel.disabled_events.add(event)
 
+        # NOTE: Reset to empty sets if all possible events are disabled
+        if len(channel.disabled_events) == len(PublicEvent):
+            channel.enabled_events = set()
+            channel.disabled_events = set()
+
     elif isinstance(channel.enabled_events, set):
         # NOTE: Otherwise remove from enabled_events
         channel.enabled_events.discard(event)
