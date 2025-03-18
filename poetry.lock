@@ -371,13 +371,13 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "cumplo-common"
-version = "1.7.12"
+version = "1.7.14"
 description = "A one-stop library that centralizes the core logic and protects the domain of the Cumplo API project"
 optional = false
 python-versions = ">=3.12,<4.0"
 files = [
-    {file = "cumplo_common-1.7.12-py3-none-any.whl", hash = "sha256:efcd48f6a127190815f9f23e9f8df7ac2e14166336fe1e950c25de30638b4b57"},
-    {file = "cumplo_common-1.7.12.tar.gz", hash = "sha256:76563e9551b0a4549a5a75fd51921b676686fb6ab35ba5d9ce576b591332630b"},
+    {file = "cumplo_common-1.7.14-py3-none-any.whl", hash = "sha256:e7e4bfc18c9546fcfc13a4a9f71956749d2c60353f8b624531f4832ba1bb09d2"},
+    {file = "cumplo_common-1.7.14.tar.gz", hash = "sha256:c21b7e6d9d3775848390c12a9b07b5da198caea8e19cb0b8c9af5a7bb436943c"},
 ]
 
 [package.dependencies]
@@ -1779,4 +1779,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "1154d59733320d006d0fb05eae2f993c3541a2894ce4f1a255269853390571d7"
+content-hash = "a2b62b54ba99be793bab405f93e2c1cd5d61537ed5e2187dc60250ff9d42b58e"
