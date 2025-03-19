@@ -89,7 +89,7 @@ def _update_filter(request: Request, payload: dict, id_filter: str) -> dict:
     # NOTE: If the only change is the name, then we don't need to check for conflicts
     if not ("name" in payload and len(payload) == 1):
         if new_filter == filter_:
-            raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
+            raise HTTPException(HTTPStatus.OK, detail="Nothing to update")
 
         if new_filter in user.filters.values():
             raise HTTPException(HTTPStatus.CONFLICT, detail="The updated filter already exists")
