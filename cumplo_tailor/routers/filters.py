@@ -86,11 +86,13 @@ def _update_filter(request: Request, payload: dict, id_filter: str) -> dict:
     data = update_dictionary(filter_.model_dump(), payload)
     new_filter = FilterConfiguration.model_validate(data)
 
-    if new_filter == filter_:
-        raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
+    # NOTE: If the only change is the name, then we don't need to check for conflicts
+    if not ("name" in payload and len(payload) == 1):
+        if new_filter == filter_:
+            raise HTTPException(HTTPStatus.BAD_REQUEST, detail="Nothing to update")
 
-    if new_filter in user.filters.values():
-        raise HTTPException(HTTPStatus.CONFLICT, detail="The updated filter already exists")
+        if new_filter in user.filters.values():
+            raise HTTPException(HTTPStatus.CONFLICT, detail="The updated filter already exists")
 
     user.filters[str(new_filter.id)] = new_filter
     firestore.client.users.put(user)
