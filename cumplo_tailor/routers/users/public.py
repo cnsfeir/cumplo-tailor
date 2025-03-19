@@ -19,7 +19,7 @@ def _delete_user(request: Request) -> None:
     firestore.client.users.delete(str(user.id))
 
 
-@router.put("/me/disable", status_code=HTTPStatus.NO_CONTENT)
+@router.patch("/me/disable", status_code=HTTPStatus.NO_CONTENT)
 def _disable_user(request: Request) -> None:
     """Disable a user."""
     user = cast(User, request.state.user)
