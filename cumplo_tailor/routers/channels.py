@@ -78,7 +78,7 @@ def _update_whatsapp_channel(request: Request, payload: dict) -> dict:
     Raises:
         HTTPException: If no WhatsApp channel exists (404)
         HTTPException: If phone number is missing from payload (400)
-        HTTPException: If phone number is unchanged (400)
+        HTTPException: If phone number is unchanged (200)
 
     """
     user = cast(User, request.state.user)
@@ -92,7 +92,7 @@ def _update_whatsapp_channel(request: Request, payload: dict) -> dict:
         raise HTTPException(HTTPStatus.BAD_REQUEST)
 
     if phone_number == channel.phone_number:
-        raise HTTPException(HTTPStatus.CONFLICT)
+        raise HTTPException(HTTPStatus.OK, detail="Nothing to update")
 
     # Update only the phone number
     channel.phone_number = str(phone_number)
@@ -111,7 +111,7 @@ def _update_webhook_channel(request: Request, id_channel: str, payload: dict) ->
     Raises:
         HTTPException: If no webhook channel exists (404)
         HTTPException: If URL is missing from payload (400)
-        HTTPException: If URL is unchanged (400)
+        HTTPException: If URL is unchanged (200)
 
     """
     user = cast(User, request.state.user)
@@ -129,7 +129,7 @@ def _update_webhook_channel(request: Request, id_channel: str, payload: dict) ->
         raise HTTPException(HTTPStatus.BAD_REQUEST)
 
     if url == channel.url:
-        raise HTTPException(HTTPStatus.CONFLICT)
+        raise HTTPException(HTTPStatus.OK, detail="Nothing to update")
 
     # Update only the URL
     channel.url = str(url)
@@ -148,7 +148,7 @@ def _update_ifttt_channel(request: Request, id_channel: str, payload: dict) -> d
     Raises:
         HTTPException: If no IFTTT channel exists (404)
         HTTPException: If key is missing from payload (400)
-        HTTPException: If key is unchanged (400)
+        HTTPException: If key is unchanged (200)
 
     """
     user = cast(User, request.state.user)
@@ -166,7 +166,7 @@ def _update_ifttt_channel(request: Request, id_channel: str, payload: dict) -> d
         raise HTTPException(HTTPStatus.BAD_REQUEST)
 
     if event == channel.event:
-        raise HTTPException(HTTPStatus.CONFLICT)
+        raise HTTPException(HTTPStatus.OK, detail="Nothing to update")
 
     # Update only the event
     channel.event = str(event)
