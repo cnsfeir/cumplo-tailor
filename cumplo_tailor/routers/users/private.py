@@ -3,8 +3,6 @@ from logging import getLogger
 
 import ulid
 from cumplo_common.database import firestore
-from cumplo_common.integrations import CloudPubSub
-from cumplo_common.models import PrivateEvent
 from cumplo_common.models.user import User
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
@@ -15,12 +13,6 @@ from cumplo_tailor.utils.dictionary import update_dictionary
 logger = getLogger(__name__)
 
 router = APIRouter(prefix="/users")
-
-EVENT_PER_USER_UPDATE: dict[str, PrivateEvent] = {
-    "filters": PrivateEvent.USER_FILTERS_UPDATED,
-    "channels": PrivateEvent.USER_CHANNELS_UPDATED,
-    "credentials": PrivateEvent.USER_CREDENTIALS_UPDATED,
-}
 
 
 @router.get("", status_code=HTTPStatus.OK)
@@ -72,11 +64,6 @@ def _update_user(payload: dict, id_user: str) -> dict:
     new_user = User.model_validate(data)
 
     firestore.client.users.put(new_user)
-
-    for key, topic in EVENT_PER_USER_UPDATE.items():
-        if key in payload:
-            CloudPubSub.publish(content=new_user.json(), topic=topic, id_user=str(new_user.id))
-
     return new_user.json()
 
 
@@ -95,7 +82,6 @@ def _delete_user(id_user: str) -> None:
         raise HTTPException(HTTPStatus.NOT_FOUND)  # noqa: B904
 
     firestore.client.users.delete(str(user.id))
-    CloudPubSub.publish(content=user.json(), topic=PrivateEvent.USER_DELETED, id_user=str(user.id))
 
 
 @router.patch("/{id_user}/disable", status_code=HTTPStatus.NO_CONTENT)
@@ -114,8 +100,6 @@ def _disable_user(id_user: str) -> None:
 
     firestore.client.disabled.put(user)
     firestore.client.users.delete(str(user.id))
-
-    CloudPubSub.publish(content=user.json(), topic=PrivateEvent.USER_DELETED, id_user=str(user.id))
 
 
 @router.patch("/{id_user}/enable", status_code=HTTPStatus.NO_CONTENT)

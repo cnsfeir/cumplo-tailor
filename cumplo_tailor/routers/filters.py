@@ -4,8 +4,6 @@ from typing import cast
 
 import ulid
 from cumplo_common.database import firestore
-from cumplo_common.integrations import CloudPubSub
-from cumplo_common.models import PrivateEvent
 from cumplo_common.models.filter_configuration import FilterConfiguration
 from cumplo_common.models.user import User
 from fastapi import APIRouter
@@ -63,8 +61,6 @@ def _create_filter(request: Request, payload: dict) -> dict:
 
     user.filters[str(filter_.id)] = filter_
     firestore.client.users.put(user)
-    CloudPubSub.publish(content=user.json(), topic=PrivateEvent.USER_FILTERS_UPDATED, id_user=str(user.id))
-
     return filter_.json()
 
 
@@ -96,8 +92,6 @@ def _update_filter(request: Request, payload: dict, id_filter: str) -> dict:
 
     user.filters[str(new_filter.id)] = new_filter
     firestore.client.users.put(user)
-    CloudPubSub.publish(content=user.json(), topic=PrivateEvent.USER_FILTERS_UPDATED, id_user=str(user.id))
-
     return new_filter.json()
 
 
@@ -116,4 +110,3 @@ def _delete_filter(request: Request, id_filter: str) -> None:
 
     del user.filters[id_filter]
     firestore.client.users.put(user)
-    CloudPubSub.publish(content=user.json(), topic=PrivateEvent.USER_FILTERS_UPDATED, id_user=str(user.id))

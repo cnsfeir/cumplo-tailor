@@ -3,8 +3,6 @@ from logging import getLogger
 from typing import cast
 
 from cumplo_common.database import firestore
-from cumplo_common.integrations import CloudPubSub
-from cumplo_common.models import PrivateEvent
 from cumplo_common.models.user import User
 from fastapi import APIRouter
 from fastapi.requests import Request
@@ -19,7 +17,6 @@ def _delete_user(request: Request) -> None:
     """Delete a user."""
     user = cast(User, request.state.user)
     firestore.client.users.delete(str(user.id))
-    CloudPubSub.publish(content=user.json(), topic=PrivateEvent.USER_DELETED, id_user=str(user.id))
 
 
 @router.put("/me/disable", status_code=HTTPStatus.NO_CONTENT)
@@ -29,5 +26,3 @@ def _disable_user(request: Request) -> None:
 
     firestore.client.disabled.put(user)
     firestore.client.users.delete(str(user.id))
-
-    CloudPubSub.publish(content=user.json(), topic=PrivateEvent.USER_DELETED, id_user=str(user.id))
