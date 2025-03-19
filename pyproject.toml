@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cumplo-tailor"
-version = "1.1.0"
+version = "1.1.2"
 description = "A configuration service that empowers users to customize their investment preferences and notification settings"
 authors = ["Cristobal Sfeir <cnsfeir@uc.cl>"]
 packages = [{ include = "cumplo_tailor" }]
