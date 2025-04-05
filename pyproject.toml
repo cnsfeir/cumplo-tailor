@@ -18,7 +18,7 @@ google-api-python-client = "^2.158.0"
 google-auth = "^2.37.0"
 google-auth-oauthlib = "^1.2.1"
 google-auth-httplib2 = "^0.2.0"
-cumplo-common = { version = "^1.9.1", source = "cumplo-pypi" }
+cumplo-common = { version = "^1.11.7", source = "cumplo-pypi" }
 
 [tool.poetry.dev-dependencies]
 ruff = "^0.7.1"
