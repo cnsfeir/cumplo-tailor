@@ -1,3 +1,4 @@
+import json
 import os
 
 from dotenv import load_dotenv
@@ -21,3 +22,6 @@ USERS_COLLECTION = os.getenv("USERS_COLLECTION", "users")
 # Cloud Credentials
 CLOUD_CREDENTIALS_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 CUMPLO_API_SERVICE = "cumplo-api-0l58eq7ymczsk.apigateway.cumplo-scraper.cloud.goog"
+
+# Gmail
+PATTERN_BY_SENDER = json.loads(os.getenv("PATTERN_BY_SENDER", "{}"))

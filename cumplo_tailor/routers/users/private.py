@@ -1,13 +1,12 @@
 from http import HTTPStatus
 from logging import getLogger
 
-import ulid
 from cumplo_common.database import firestore
 from cumplo_common.models.user import User
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 
-from cumplo_tailor.integrations import CloudCredentials
+from cumplo_tailor.controllers import UsersController
 from cumplo_tailor.utils.dictionary import update_dictionary
 
 logger = getLogger(__name__)
@@ -39,10 +38,7 @@ def _retrieve_user(id_user: str) -> dict:
 @router.post("", status_code=HTTPStatus.CREATED)
 async def _create_user(payload: dict) -> dict:
     """Create a new user."""
-    user = User.model_validate({**payload, "id": ulid.new(), "api_key": ""})
-    user.api_key = await CloudCredentials.create_api_key(str(user.id))
-
-    firestore.client.users.create(user)
+    user = await UsersController.create(payload)
     return user.json()
 
 
@@ -81,7 +77,7 @@ def _delete_user(id_user: str) -> None:
     except KeyError:
         raise HTTPException(HTTPStatus.NOT_FOUND)  # noqa: B904
 
-    firestore.client.users.delete(str(user.id))
+    firestore.client.users.delete(user)
 
 
 @router.patch("/{id_user}/disable", status_code=HTTPStatus.NO_CONTENT)
@@ -99,7 +95,7 @@ def _disable_user(id_user: str) -> None:
         raise HTTPException(HTTPStatus.NOT_FOUND)  # noqa: B904
 
     firestore.client.disabled.put(user)
-    firestore.client.users.delete(str(user.id))
+    firestore.client.users.delete(user)
 
 
 @router.patch("/{id_user}/enable", status_code=HTTPStatus.NO_CONTENT)
@@ -115,4 +111,4 @@ def _enable_user(id_user: str) -> None:
         raise HTTPException(HTTPStatus.NOT_FOUND)
 
     firestore.client.users.put(user)
-    firestore.client.disabled.delete(str(user.id))
+    firestore.client.disabled.delete(user)

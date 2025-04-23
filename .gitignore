@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 cumplo-tailor-credentials.json
 cumplo-pypi-credentials.json
+cumplo-gmail-credentials.json

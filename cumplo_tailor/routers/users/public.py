@@ -16,7 +16,7 @@ router = APIRouter(prefix="/users")
 def _delete_user(request: Request) -> None:
     """Delete a user."""
     user = cast(User, request.state.user)
-    firestore.client.users.delete(str(user.id))
+    firestore.client.users.delete(user)
 
 
 @router.patch("/me/disable", status_code=HTTPStatus.NO_CONTENT)
@@ -25,4 +25,4 @@ def _disable_user(request: Request) -> None:
     user = cast(User, request.state.user)
 
     firestore.client.disabled.put(user)
-    firestore.client.users.delete(str(user.id))
+    firestore.client.users.delete(user)
